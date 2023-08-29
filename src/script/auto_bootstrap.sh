@@ -1,4 +1,4 @@
-#!/system/bin/sh
+#!/bin/bash
 # For eBPF programs only based on AOSP platform
 # diff with normal eBPF programs:using AOSP "bpfloader" to enable kernel program.
 
@@ -62,7 +62,7 @@ echo "参数b: ${TRACEPOINT[$index]}"
 # 定义目录变量
 TP_SUBSYS_DIR="/sys/kernel/debug/tracing/events"
 
-#-------------------选定子系统------------------------#
+#-------------------pre.选定子系统------------------------#
 
 output_subsys_dir=$(ls "$TP_SUBSYS_DIR")
 
@@ -87,12 +87,12 @@ else
   ((index++))
 fi
 
-#-----------------------------------生成内核态程序主逻辑---------------------------------------------#
+#----------------------------------生成内核态程序主逻辑---------------------------------------------#
 #生成内核态文件
-BPF_KERNEL_FILE_HEADER="#include <linux/bpf.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <bpf_helpers.h>\n"
+BPF_KERNEL_FILE_HEADER="#include \"vmlinux.h\"
+#include <bpf/bpf_helpers.h>
+#include <bpf/bpf_tracing.h>
+#include <bpf/bpf_core_read.h>\n"
 
 
 #对每一个选中的tracepoint生成内核态ebpf程序
@@ -114,13 +114,13 @@ for path in "${TP_SUBSYS_DIR}/${SELECT_SUBSYS}/${TRACEPOINT[@]}"; do
   echo "$TP_FULLY_DIR/format"
 
 
-  #--------------------1.获取原始format数据-------------------#
+  #--------------------1.1获取原始format数据-------------------#
   RAW_STRUCTURE=$(cat "$TP_FULLY_DIR/format")
   echo "----------获取原始format数据----------"
   echo "$RAW_STRUCTURE"
   
   
-  #--------------------2.处理原始format数据-------------------#
+  #--------------------1.2.处理原始format数据-------------------#
   BPF_KERNEL_STRUCT_MEMBER+="\tunsigned long long ignore;\n" #对齐
   start_append=false
   while IFS= read -r line; do
@@ -144,7 +144,7 @@ for path in "${TP_SUBSYS_DIR}/${SELECT_SUBSYS}/${TRACEPOINT[@]}"; do
   echo -e $BPF_KERNEL_STRUCT_MEMBER
 
 
-  #--------------------3.拼接为C语言结构体形式-------------#
+  #--------------------1.3.拼接为C语言结构体形式-------------#
   BPF_KERNEL_FORMAT_STRUCTURE="
 struct ${TRACEPOINT[@]}{
 $BPF_KERNEL_STRUCT_MEMBER
@@ -152,11 +152,11 @@ $BPF_KERNEL_STRUCT_MEMBER
   BPF_KERNEL_FILE+=$BPF_KERNEL_FORMAT_STRUCTURE
 
 
-  #----------------------4.声明map--------------------#
+  #----------------------1.4.声明map--------------------#
     #4.1声明key
       #目前先写死了，后续扩展
     #4.2value
-  if [ -z "$BPF_KERNEL_MAP_VALUE_TYPE" ] && [ -z "$BPF_KERNEL_MAP_VALUE" ]; then
+  if [ -z "$BPF_KERNEL_MAP_VALUE_TYPE" ] || [ -z "$BPF_KERNEL_MAP_VALUE" ]; then
     #echo -e "${BPF_KERNEL_STRUCT_MEMBER}"
 
     echo -n "选择MAP的key的类型(示例:pid_t): "
@@ -169,25 +169,31 @@ $BPF_KERNEL_STRUCT_MEMBER
     BPF_KERNEL_MAP_NAME="${BPF_KERNEL_MAP_KEY}_${BPF_KERNEL_MAP_VALUE}_map"
   fi
 
-  BPF_KERNEL_DEFINE_MAP+="DEFINE_BPF_MAP(${BPF_KERNEL_MAP_NAME}, ARRAY, int, ${BPF_KERNEL_MAP_VALUE_TYPE}, 1024);\n"
+  BPF_KERNEL_DEFINE_MAP+="struct {
+	__uint(type, BPF_MAP_TYPE_ARRAY);
+	__uint(max_entries, 1);
+	__type(key, u32);
+	__type(value, ${BPF_KERNEL_MAP_VALUE_TYPE});
+} ${BPF_KERNEL_MAP_NAME} SEC(\".maps\");\n\n"
   BPF_KERNEL_FILE+=$BPF_KERNEL_DEFINE_MAP
-  #--------------------------5.声明prog--------------------#
+  #--------------------------1.5.声明prog--------------------#
     #5.1声明key value
   BPF_KERNEL_PROG_CONTENT+="\tint key;\n\t${BPF_KERNEL_MAP_VALUE_TYPE} val;\n"
     #5.2获取key value
-  BPF_KERNEL_PROG_CONTENT+="\tkey = bpf_get_smp_processor_id();\n\tval = args->${BPF_KERNEL_MAP_VALUE};\n"
+  BPF_KERNEL_PROG_CONTENT+="\tkey = bpf_get_smp_processor_id();\n\tval = ctx->${BPF_KERNEL_MAP_VALUE};\n"
     #5.3更新map逻辑
-  BPF_KERNEL_PROG_CONTENT+="\tbpf_${BPF_KERNEL_MAP_NAME}_update_elem(&key, &val, BPF_ANY);"
-  BPF_KERNEL_DEFINE_PROG+="DEFINE_BPF_PROG(\"tracepoint/${SELECT_SUBSYS}/${TRACEPOINT[@]}\", AID_ROOT, AID_NET_ADMIN, tp_${TRACEPOINT[@]}) (struct ${TRACEPOINT[@]}* args) {
+  BPF_KERNEL_PROG_CONTENT+="\tbpf_map_update_elem(&${BPF_KERNEL_MAP_NAME}, &key, &val, BPF_ANY);"
+  
+  BPF_KERNEL_DEFINE_PROG+="SEC(\"tp/${SELECT_SUBSYS}/${TRACEPOINT[@]}\")\nint handle_tp(struct ${TRACEPOINT[@]} *ctx){
 ${BPF_KERNEL_PROG_CONTENT}
-\treturn 0;
+\treturn 0;\n
 };\n"
 
   BPF_KERNEL_FILE+=$BPF_KERNEL_DEFINE_PROG
 
-  #-----------------------6.LICENSE--------------------------#
-  BPF_KERNEL_FILE+="LICENSE(\"Apache 2.0\");"
-  #-----------------------7.打印为完整内核ebpf程序------------#
+  #-----------------------1.6.LICENSE--------------------------#
+  BPF_KERNEL_FILE+="char LICENSE[] SEC(\"license\") = \"Dual BSD/GPL\";"
+  #-----------------------1.7.打印为完整内核ebpf程序------------#
   echo "--------------内核态程序完整程序生成-----------"
   if [ -z $FILE_NAME ];then
     echo -n "输出文件名(不含后缀):"
@@ -199,53 +205,83 @@ ${BPF_KERNEL_PROG_CONTENT}
 
   #-------------------------------------User file generate--------------------------------#
 
-  # 1.声明结构变量
+  # 2.1.声明结构变量
   BPF_USER_FILE=""
-  BPF_USER_HEADER="#include <android-base/macros.h>
-  #include <stdlib.h>
-  #include <unistd.h>
-  #include <iostream>
-  #include <bpf/BpfMap.h>
-  #include <bpf/BpfUtils.h>
-  #include <libbpf_android.h>
-  #include \"libbpf.h\"\n"
+  BPF_USER_HEADER="#include <signal.h>
+#include <stdio.h>
+#include <sys/resource.h>
+#include <bpf/libbpf.h>
+#include \"${FILE_NAME}.skel.h\"\n"
 
-  BPF_USER_MAP_PREFIX="map_${FILE_NAME}"
-  BPF_USER_MAP_SUFFIX="${BPF_KERNEL_MAP_NAME}"
-  BPF_USER_PROG_PREFIX="prog_${FILE_NAME}"
-  BPF_USER_PROG_SUFFIX="${SELECT_SUBSYS}_${TRACEPOINT[@]}"
+  # BPF_USER_MAP_PREFIX="map_${FILE_NAME}"
+  # BPF_USER_MAP_SUFFIX="${BPF_KERNEL_MAP_NAME}"
+  # BPF_USER_PROG_PREFIX="prog_${FILE_NAME}"
+  # BPF_USER_PROG_SUFFIX="${SELECT_SUBSYS}_${TRACEPOINT[@]}"
 
   BPF_USER_FILE+=$BPF_USER_HEADER
-  BPF_USER_FILE+=$BPF_KERNEL_FORMAT_STRUCTURE
+  BPF_USER_FILE+="${BPF_KERNEL_FORMAT_STRUCTURE}\n"
+  BPF_USER_COMMON=""
+  BPF_USER_MAIN=""
+  # 2.2定义bootstrap用户态常规函数
+  BPF_USER_COMMON+="static int libbpf_print_fn(enum libbpf_print_level level, const char *format, va_list args)
+{
+	if (level == LIBBPF_DEBUG)
+		return 0;
+	return vfprintf(stderr, format, args);
+}\n\n"
 
-  # 2.定义用户态main函数主逻辑
+  BPF_USER_COMMON+="static volatile bool exiting = false;\n
+static void sig_handler(int sig)
+{
+	exiting = true;
+}\n\n"
 
-          #2.1 初始化，打开prog的fd并attach tracepoint
-  BPF_USER_TP_MAP_PATH="\tconstexpr const char tp_prog_path[] = \"/sys/fs/bpf/${BPF_USER_PROG_PREFIX}_tracepoint_${BPF_USER_PROG_SUFFIX}\";
-\tconstexpr const char map_path[] = \"/sys/fs/bpf/${BPF_USER_MAP_PREFIX}_${BPF_USER_MAP_SUFFIX}\";\n"
+  BPF_USER_MAIN+="int main(int argc, char **argv)
+{
+  ${BPF_KERNEL_MAP_VALUE_TYPE} _${BPF_KERNEL_MAP_VALUE};
+  struct ${FILE_NAME}_bpf *skel;
+  int err;\n
+  int key = 0;
+  libbpf_set_print(libbpf_print_fn);
+  signal(SIGINT, sig_handler);
+  signal(SIGTERM, sig_handler);\n
+  skel = ${FILE_NAME}_bpf__open();\n
+  if (!skel) {\n
+    fprintf(stderr, \"Failed to open and load BPF skeleton\\\n\");
+    return 1;\n
+  }
 
-  BPF_USER_ATTACH="\tint mProgFd = bpf_obj_get(tp_prog_path);\n
-\tbpf_attach_tracepoint(mProgFd, \"${SELECT_SUBSYS}\", \"${TRACEPOINT[@]}\");\n
-\tsleep(1);\n"
+  err = ${FILE_NAME}_bpf__load(skel);
+	if (err) {
+		fprintf(stderr, \"Failed to load and verify BPF skeleton\\\n\");
+		goto cleanup;
+	}
 
-  BPF_USER_FILE+="int main(){\n"
-  BPF_USER_FILE+=$BPF_USER_TP_MAP_PATH
-  BPF_USER_FILE+=$BPF_USER_ATTACH
-
-  echo -e $BPF_USER_TP_MAP_PATH
+	/* Attach tracepoints */
+	err = ${FILE_NAME}_bpf__attach(skel);
+	if (err) {
+		fprintf(stderr, \"Failed to attach BPF skeleton\\\n\");
+		goto cleanup;
+	}
+  while(!exiting){
+    bpf_map__lookup_elem((skel->maps.${BPF_KERNEL_MAP_NAME}), &key, sizeof(int), &_${BPF_KERNEL_MAP_VALUE}, sizeof(${BPF_KERNEL_MAP_VALUE_TYPE}), BPF_ANY);
+    printf(\"${BPF_KERNEL_MAP_VALUE} is %d \",_${BPF_KERNEL_MAP_VALUE});
+  }
   
-          #2.2 打开并创建map实例，实现用户态逻辑（目前是简单输出）
-  BPF_USER_MAP_INSTANCE="\tandroid::bpf::BpfMap<int ,${BPF_KERNEL_MAP_VALUE_TYPE}> myMap0(map_path);\n"
-  BPF_USER_LOGIC="\twhile(1){
-\t\tusleep(40000);
-\t\tprintf(\"Last Job on cpu 0 has waited %llu\", *myMap0.readValue(0));
-}
-\texit(0);
-}"
-  BPF_USER_FILE+=$BPF_USER_MAP_INSTANCE
-  BPF_USER_FILE+=$BPF_USER_LOGIC
+cleanup:
+	/* Clean up */
+	${FILE_NAME}_bpf__destroy(skel);
 
-          #2.3输出用户态逻辑
+	return err < 0 ? -err : 0;
+};"
+
+
+
+
+  BPF_USER_LOGIC+=$BPF_USER_COMMON
+  BPF_USER_FILE+=$BPF_USER_LOGIC
+  BPF_USER_FILE+=$BPF_USER_MAIN
+          #2.2.3输出用户态逻辑
   echo -e "$BPF_USER_FILE" > "$FILE_NAME.cpp"
 
 done
@@ -255,6 +291,7 @@ echo "---------------测试--------------------"
 for element in "${TRACEPOINT[@]}"; do
   echo "$element"
 done
+
 
 
 

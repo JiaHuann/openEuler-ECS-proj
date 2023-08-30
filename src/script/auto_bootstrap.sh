@@ -199,7 +199,7 @@ ${BPF_KERNEL_PROG_CONTENT}
     echo -n "输出文件名(不含后缀):"
     read -r FILE_NAME
   fi
-  echo -e "$BPF_KERNEL_FILE" > "$FILE_NAME.c"
+  echo -e "$BPF_KERNEL_FILE" > "$FILE_NAME.bpf.c"
 
 
 
@@ -282,7 +282,7 @@ cleanup:
   BPF_USER_FILE+=$BPF_USER_LOGIC
   BPF_USER_FILE+=$BPF_USER_MAIN
           #2.2.3输出用户态逻辑
-  echo -e "$BPF_USER_FILE" > "$FILE_NAME.cpp"
+  echo -e "$BPF_USER_FILE" > "$FILE_NAME.c"
 
 done
 

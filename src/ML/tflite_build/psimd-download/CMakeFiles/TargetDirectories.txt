@@ -1,0 +1,3 @@
+/home/jiahuan/MLsys/tflite_build/psimd-download/CMakeFiles/psimd.dir
+/home/jiahuan/MLsys/tflite_build/psimd-download/CMakeFiles/edit_cache.dir
+/home/jiahuan/MLsys/tflite_build/psimd-download/CMakeFiles/rebuild_cache.dir

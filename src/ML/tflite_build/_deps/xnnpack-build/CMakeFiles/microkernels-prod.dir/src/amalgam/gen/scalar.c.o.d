@@ -1,0 +1,73 @@
+_deps/xnnpack-build/CMakeFiles/microkernels-prod.dir/src/amalgam/gen/scalar.c.o: \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/amalgam/gen/scalar.c \
+ /usr/include/stdc-predef.h /usr/include/assert.h /usr/include/features.h \
+ /usr/include/features-time64.h \
+ /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+ /usr/include/x86_64-linux-gnu/bits/timesize.h \
+ /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+ /usr/include/x86_64-linux-gnu/bits/long-double.h \
+ /usr/include/x86_64-linux-gnu/gnu/stubs.h \
+ /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+ /home/jiahuan/MLsys/tflite_build/FXdiv-source/include/fxdiv.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+ /usr/include/x86_64-linux-gnu/bits/types.h \
+ /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+ /usr/include/x86_64-linux-gnu/bits/time64.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h \
+ /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
+ /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/syslimits.h \
+ /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/local_lim.h \
+ /usr/include/linux/limits.h \
+ /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
+ /usr/include/x86_64-linux-gnu/bits/pthread_stack_min.h \
+ /usr/include/x86_64-linux-gnu/bits/posix2_lim.h /usr/include/math.h \
+ /usr/include/x86_64-linux-gnu/bits/math-vector.h \
+ /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
+ /usr/include/x86_64-linux-gnu/bits/floatn.h \
+ /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
+ /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
+ /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
+ /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls.h /usr/include/string.h \
+ /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/argmaxpool.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/common.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/avgpool.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/microparams.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/conv.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/dwconv.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/fill.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/gavgpool.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/gemm.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/ibilinear.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/igemm.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/lut.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/math.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/stdbool.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/maxpool.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/packw.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/packx.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/pad.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/pavgpool.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/prelu.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/raddstoreexpminusmax.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/reduce.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/rmax.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/spmm.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/transpose.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/unaligned.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/unpool.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/vadd.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/vbinary.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/vcvt.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/vlrelu.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/vmul.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/vmulcaddc.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/vunary.h \
+ /home/jiahuan/MLsys/tflite_build/xnnpack/src/xnnpack/zip.h

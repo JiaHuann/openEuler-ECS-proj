@@ -1,0 +1,14 @@
+# Target labels
+ pthreadpool
+# Source files and their labels
+/home/jiahuan/MLsys/tflite_build/pthreadpool-download/CMakeFiles/pthreadpool
+/home/jiahuan/MLsys/tflite_build/pthreadpool-download/CMakeFiles/pthreadpool.rule
+/home/jiahuan/MLsys/tflite_build/pthreadpool-download/CMakeFiles/pthreadpool-complete.rule
+/home/jiahuan/MLsys/tflite_build/pthreadpool-download/pthreadpool-prefix/src/pthreadpool-stamp/pthreadpool-build.rule
+/home/jiahuan/MLsys/tflite_build/pthreadpool-download/pthreadpool-prefix/src/pthreadpool-stamp/pthreadpool-configure.rule
+/home/jiahuan/MLsys/tflite_build/pthreadpool-download/pthreadpool-prefix/src/pthreadpool-stamp/pthreadpool-download.rule
+/home/jiahuan/MLsys/tflite_build/pthreadpool-download/pthreadpool-prefix/src/pthreadpool-stamp/pthreadpool-install.rule
+/home/jiahuan/MLsys/tflite_build/pthreadpool-download/pthreadpool-prefix/src/pthreadpool-stamp/pthreadpool-mkdir.rule
+/home/jiahuan/MLsys/tflite_build/pthreadpool-download/pthreadpool-prefix/src/pthreadpool-stamp/pthreadpool-patch.rule
+/home/jiahuan/MLsys/tflite_build/pthreadpool-download/pthreadpool-prefix/src/pthreadpool-stamp/pthreadpool-test.rule
+/home/jiahuan/MLsys/tflite_build/pthreadpool-download/pthreadpool-prefix/src/pthreadpool-stamp/pthreadpool-update.rule

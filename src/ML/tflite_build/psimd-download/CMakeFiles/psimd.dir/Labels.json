@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/jiahuan/MLsys/tflite_build/psimd-download/CMakeFiles/psimd"
+		},
+		{
+			"file" : "/home/jiahuan/MLsys/tflite_build/psimd-download/CMakeFiles/psimd.rule"
+		},
+		{
+			"file" : "/home/jiahuan/MLsys/tflite_build/psimd-download/CMakeFiles/psimd-complete.rule"
+		},
+		{
+			"file" : "/home/jiahuan/MLsys/tflite_build/psimd-download/psimd-prefix/src/psimd-stamp/psimd-build.rule"
+		},
+		{
+			"file" : "/home/jiahuan/MLsys/tflite_build/psimd-download/psimd-prefix/src/psimd-stamp/psimd-configure.rule"
+		},
+		{
+			"file" : "/home/jiahuan/MLsys/tflite_build/psimd-download/psimd-prefix/src/psimd-stamp/psimd-download.rule"
+		},
+		{
+			"file" : "/home/jiahuan/MLsys/tflite_build/psimd-download/psimd-prefix/src/psimd-stamp/psimd-install.rule"
+		},
+		{
+			"file" : "/home/jiahuan/MLsys/tflite_build/psimd-download/psimd-prefix/src/psimd-stamp/psimd-mkdir.rule"
+		},
+		{
+			"file" : "/home/jiahuan/MLsys/tflite_build/psimd-download/psimd-prefix/src/psimd-stamp/psimd-patch.rule"
+		},
+		{
+			"file" : "/home/jiahuan/MLsys/tflite_build/psimd-download/psimd-prefix/src/psimd-stamp/psimd-test.rule"
+		},
+		{
+			"file" : "/home/jiahuan/MLsys/tflite_build/psimd-download/psimd-prefix/src/psimd-stamp/psimd-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"psimd"
+		],
+		"name" : "psimd"
+	}
+}

@@ -6,6 +6,7 @@ SELECT_SUBSYS=""
 TRACEPOINT=()
 index=0
 
+
 show_usage() {
   echo "Usage:  [options]"
   echo "Options:"
@@ -58,13 +59,17 @@ while getopts ":s:p:t:v:h:f:" opt; do
 done
 
 echo "参数b: ${TRACEPOINT[$index]}"
+
 #安装依赖
+sudo mount -t debugfs none /sys/kernel/debug
+cp ./Makefile ./Makefile.backup
+
 # 定义目录变量
 TP_SUBSYS_DIR="/sys/kernel/debug/tracing/events"
 
 #-------------------pre.选定子系统------------------------#
 
-output_subsys_dir=$(ls "$TP_SUBSYS_DIR")
+output_subsys_dir=$(sudo ls "$TP_SUBSYS_DIR")
 
 if [ -z "$SELECT_SUBSYS" ]; then
   echo "目录列表：$output_subsys_dir"
@@ -77,7 +82,7 @@ TP_DIR="${TP_SUBSYS_DIR}/${SELECT_SUBSYS}"
 echo ${TP_DIR}
 
 if [ -z "${TRACEPOINT[$index]}" ]; then
-  output_tp_dir=$(ls "$TP_DIR")
+  output_tp_dir=$(sudo ls "$TP_DIR")
   echo "tracepoint列表:$output_tp_dir ${TRACEPOINT[$index]}"
 
   echo -n "请输入要监控的tp: "
@@ -115,7 +120,7 @@ for path in "${TP_SUBSYS_DIR}/${SELECT_SUBSYS}/${TRACEPOINT[@]}"; do
 
 
   #--------------------1.1获取原始format数据-------------------#
-  RAW_STRUCTURE=$(cat "$TP_FULLY_DIR/format")
+  RAW_STRUCTURE=$(sudo cat "$TP_FULLY_DIR/format")
   echo "----------获取原始format数据----------"
   echo "$RAW_STRUCTURE"
   
@@ -265,7 +270,7 @@ static void sig_handler(int sig)
 	}
   while(!exiting){
     bpf_map__lookup_elem((skel->maps.${BPF_KERNEL_MAP_NAME}), &key, sizeof(int), &_${BPF_KERNEL_MAP_VALUE}, sizeof(${BPF_KERNEL_MAP_VALUE_TYPE}), BPF_ANY);
-    printf(\"${BPF_KERNEL_MAP_VALUE} is %d \",_${BPF_KERNEL_MAP_VALUE});
+    printf(\"[${TRACEPOINT[@]}]->${BPF_KERNEL_MAP_VALUE} on cpu0 is %d \\\n \",_${BPF_KERNEL_MAP_VALUE});
   }
   
 cleanup:
@@ -292,6 +297,22 @@ for element in "${TRACEPOINT[@]}"; do
   echo "$element"
 done
 
+
+# 在运行 aaa 前修改 makefile
+sudo sed -E -i "/^APPS =/ s/$/ $FILE_NAME/" Makefile
+
+make
+
+# 运行 aaa，并检查返回状态
+sudo ./"${FILE_NAME}"
+# if [ $? -eq 0 ]; then
+    # 恢复原始的 makefile
+# else
+#     echo "Error: aaa failed to run"
+#     # 在这里可以根据需要添加适当的错误处理逻辑
+# fi
+mv Makefile.backup Makefile
+rm -r ./"${FILE_NAME}".*
 
 
 

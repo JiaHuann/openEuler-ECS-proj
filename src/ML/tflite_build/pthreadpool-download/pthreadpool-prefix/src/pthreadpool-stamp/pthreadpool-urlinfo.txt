@@ -1,3 +1,0 @@
-repository='external project URL'
-module='https://github.com/Maratyszcza/pthreadpool/archive/966fbf7c86390b7f489f7474ecf99c42c91fddac.zip'
-tag='SHA256=bac17ab3365ba7a21a6eacf9bbb6fef3e69a4cd4eadde33cf48eada4a44f9694'
